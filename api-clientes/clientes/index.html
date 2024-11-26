@@ -24,7 +24,7 @@
             axios
                 .delete(`http://localhost:8080/clientes/deletar/${id}`)
                 .then((response) => {
-                    if(response.status === 200) {
+                    if (response.status === 200) {
                         alert("Cliente removido com sucesso!");
                         window.location.href = "/clientes"
                     }
@@ -36,17 +36,81 @@
     </script>
 
     <script type="text/javascript">
+        function editarCliente(id) {
+            // Fazer uma requisição GET para obter os dados do cliente
+            axios.get(`http://localhost:8080/clientes/listaEsp/${id}`)
+                .then((response) => {
+                    const cliente = response.data;
+
+                    // Preencher os campos do formulário com os dados do cliente
+                    document.getElementById('editId').value = cliente.id;
+                    document.getElementById('editNome').value = cliente.nome;
+                    document.getElementById('editSobrenome').value = cliente.sobrenome;
+                    document.getElementById('editEmail').value = cliente.email;
+
+                    // Mostrar o modal de edição
+                    document.getElementById('editModal').style.display = 'block';
+                })
+                .catch((error) => {
+                    alert('Erro ao carregar os dados do cliente!');
+                });
+        }
+
+        function salvarEdicao() {
+            const id = document.getElementById('editId').value;
+            const nome = document.getElementById('editNome').value;
+            const sobrenome = document.getElementById('editSobrenome').value;
+            const email = document.getElementById('editEmail').value;
+
+            const clienteAtualizado = {
+                id: id,
+                nome: nome,
+                sobrenome: sobrenome,
+                email: email
+            };
+
+            // Fazer uma requisição PUT para atualizar os dados
+            axios.put(`http://localhost:8080/clientes/atualizar/${id}`, clienteAtualizado)
+                .then((response) => {
+                    if (response.status === 200) {
+                        alert("Cliente atualizado com sucesso!");
+                        // Atualizar a tabela ou recarregar a página para refletir as mudanças
+                        window.location.reload(); // Pode também atualizar apenas a linha da tabela
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    alert("Erro ao atualizar o cliente!");
+                });
+
+            // Fechar o modal de edição
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function cancelarEdicao() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+    </script>
+
+
+
+
+
+
+    <script type="text/javascript">
         axios
             .get("http://localhost:8080/clientes/listar")
             .then((response) => {
-                if(response.status === 200) {
+                if (response.status === 200) {
                     const dados = response.data;
 
-                    for(const cliente of dados) {
+                    for (const cliente of dados) {
 
                         const acoesLinha = `<div>
-                            <i class="bi bi-trash" onclick=deletarCliente(${cliente.id})>
-                            </div>`;
+                    <i class="bi bi-trash" style="cursor:pointer;" onclick="deletarCliente(${cliente.id})"></i>
+                    <i class="bi bi-pen" style="cursor:pointer;" onclick="editarCliente(${cliente.id})"></i>
+                </div>`;
 
                         let linha = $('<tr/>');
                         linha.append($('<td/>').html(acoesLinha));
@@ -70,7 +134,7 @@
                 <h1>Clientes</h1>
             </div>
         </div>
-    
+
         <div class="div-header-menu">
             <nav class="navbar navbar-expand-lg bg-menu">
                 <div class="collapse navbar-collapse">
@@ -79,7 +143,7 @@
                             <a class="nav-link" href="index.html">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Novo</a>
+                            <a class="nav-link" href="/clientes/manutencaocliente">Novo</a>
                         </li>
                     </ul>
                 </div>
@@ -99,10 +163,27 @@
                 </tr>
             </thead>
             <tbody>
-                
+
             </tbody>
         </table>
     </div>
+
+    <!-- Formulário de Edição -->
+    <div id="editModal" style="display:none;">
+        <h3>Editar Cliente</h3>
+        <form id="editForm">
+            <input type="hidden" id="editId" name="id" />
+            <label>Nome:</label>
+            <input type="text" id="editNome" name="nome" />
+            <label>Sobrenome:</label>
+            <input type="text" id="editSobrenome" name="sobrenome" />
+            <label>Email:</label>
+            <input type="email" id="editEmail" name="email" />
+            <button type="button" onclick="salvarEdicao()">Salvar</button>
+            <button type="button" onclick="cancelarEdicao()">Cancelar</button>
+        </form>
+    </div>
+
 
 </body>
 
