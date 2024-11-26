@@ -37,18 +37,18 @@
 
     <script type="text/javascript">
         function editarCliente(id) {
-            // Fazer uma requisição GET para obter os dados do cliente
+            
             axios.get(`http://localhost:8080/clientes/listaEsp/${id}`)
                 .then((response) => {
                     const cliente = response.data;
 
-                    // Preencher os campos do formulário com os dados do cliente
+                    
                     document.getElementById('editId').value = cliente.id;
                     document.getElementById('editNome').value = cliente.nome;
                     document.getElementById('editSobrenome').value = cliente.sobrenome;
                     document.getElementById('editEmail').value = cliente.email;
 
-                    // Mostrar o modal de edição
+                    
                     document.getElementById('editModal').style.display = 'block';
                 })
                 .catch((error) => {
@@ -69,13 +69,13 @@
                 email: email
             };
 
-            // Fazer uma requisição PUT para atualizar os dados
+            
             axios.put(`http://localhost:8080/clientes/atualizar/${id}`, clienteAtualizado)
                 .then((response) => {
                     if (response.status === 200) {
                         alert("Cliente atualizado com sucesso!");
-                        // Atualizar a tabela ou recarregar a página para refletir as mudanças
-                        window.location.reload(); // Pode também atualizar apenas a linha da tabela
+                        
+                        window.location.reload(); 
                     }
                 })
                 .catch((error) => {
@@ -83,7 +83,6 @@
                     alert("Erro ao atualizar o cliente!");
                 });
 
-            // Fechar o modal de edição
             document.getElementById('editModal').style.display = 'none';
         }
 
